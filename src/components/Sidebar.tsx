@@ -60,12 +60,33 @@ export function Sidebar({
       <MaterialDetails {...{ usedWhere: m.usedWhere, supplierName: m.material.supplier.name, ...m.material }} />
     ),
   }));
-  const stakeholderList = project.stakeholders
-    .map((s) => ({
-      key: s.id,
-      label: s.type[0],
-      children: <div className="text-sm font-light">{s.companyName}</div>,
-    }))
+  const stakeholders = project.stakeholders.map(s => ({ type: s.type as string[], id: s.id, url: s.url, companyName: s.companyName }))
+  if (project.photographerUrl !== null && project.imageCredit !== null) {
+    stakeholders.push({
+      id: project.photographerUrl,
+      type: ["PHOTOGRAPHER"],
+      url: project.photographerUrl,
+      companyName: project.imageCredit
+    })
+  }
+
+  const stakeholderList = stakeholders
+    .map(s => {
+      if (s.url !== null) {
+        return {
+          key: s.id,
+          label: s.type[0],
+          children: <div className="text-sm font-light"><a href={s.url} rel="noopener noreferrer"
+            target="_blank"
+          >{s.companyName}</a></div>,
+        }
+      }
+      return {
+        key: s.id,
+        label: s.type[0],
+        children: <div className="text-sm font-light">{s.companyName}</div>,
+      }
+    })
     .concat(comingSoonStakeholders);
   return (
     <div className="pl-4 pr-4 pb-4">
